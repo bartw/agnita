@@ -98,7 +98,7 @@ To register, log in and log out using AWS Cognito you need [AWS Amplify](https:/
 npm install --save aws-amplify
 ```
 
-The `.env` file is where you should save your AWS Cognito id's. It's best not to check those in because other people might start using your user pool to store their users. So make sure to add `.env` to your `.gitignore` to exclude it from Git. 
+You will need the Region, User Pool ID and App Client ID of Cognito in your React app. The `.env` file is where you should save those AWS Cognito id's. It's best not to check those in because other people might start using your user pool to store their users. So make sure to add `.env` to your `.gitignore` to exclude it from Git.
 
 You do know [Git](https://git-scm.com/) do you? If you don't, you should learn it, just read the first 3 chapters of [this free book](https://git-scm.com/book/en/v2).
 
@@ -106,14 +106,222 @@ You do know [Git](https://git-scm.com/) do you? If you don't, you should learn i
 touch .env
 ```
 
-Your `.env` file should look something like the one below. 
+Your `.env` file should look something like the one below. The `REACT_APP_` prefix is mandatory for Create-React-App to pick up your [environment variables](https://create-react-app.dev/docs/adding-custom-environment-variables/).
 
 > I used an unbreakable algorithm to change all the id's so don't try anything. Actually I just typed in some random characters instead of the real id but it will get the job done.
 
 ```
 REACT_APP_REGION=us-east-1
-REACT_APP_USER_POOL_ID=us-east-1_DeDry2ddr
-REACT_APP_USER_POOL_WEB_CLIENT_ID=1nuadrbtwes5o6vjriuu34803f
-REACT_APP_DOMAIN=my.domain.com
-REACT_APP_REDIRECT=http://localhost:3000/
+REACT_APP_USER_POOL_ID=us-east-1_SW382wGyU
+REACT_APP_USER_POOL_WEB_CLIENT_ID=4t3RdWfp5ydwadefjthscrdrcd
 ```
+
+Everything is in place to integrate AWS Cognito into your Create-React-App app. So you can start reacting. I added some css and a `FormElement` component to make it look a little (really just a little) better. You can check out those changes in the full code.
+
+First you need to initialize AWS Amplify. I did that in my `App` component. I used the [useEffect](https://reactjs.org/docs/hooks-effect.html) hook to initialize AWS Amplify when my `App` component mounts.
+
+```js
+import React, { useEffect } from "react";
+import Amplify from "aws-amplify";
+import logo from "./logo.svg";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
+import "./App.css";
+
+const App = () => {
+  useEffect(() => {
+    Amplify.configure({
+      Auth: {
+        region: process.env.REACT_APP_REGION,
+        userPoolId: process.env.REACT_APP_USER_POOL_ID,
+        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
+      },
+    });
+  });
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <h1>Agnita</h1>
+        <h2>Authentication for Create React App using AWS Cognito</h2>
+      </header>
+      <SignUp />
+      <SignIn />
+    </div>
+  );
+};
+
+export default App;
+```
+
+You can see I created a `SignUp` and a `SignIn` component. These are 2 quite similar forms that use the AWS Amplify Auth API to create new users and sign in with those users. Now this app doesn't do anything so you should keep your browser console open to see if stuff works.
+
+The `SignUp` component consists of 2 forms. In the first form you need to fill in an email address and a password. When you submit, a user will be created with your email as the username and as email also your email and your password. If everything goes as smooth, the second form will become visibile. The second form requires you to enter a confirmation code. This code should be emailed to you after the first step. After you submit your confirmation code you will have a registered user.
+
+```js
+import React, { useState } from "react";
+import { Auth } from "aws-amplify";
+import FormElement from "./FormElement";
+
+const SignUp = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [waitingForCode, setWaitingForCode] = useState(false);
+  const [code, setCode] = useState("");
+
+  const signUp = (e) => {
+    e.preventDefault();
+
+    Auth.signUp({ username: email, password, attributes: { email } })
+      .then((data) => {
+        console.log(data);
+        setWaitingForCode(true);
+        setPassword("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const confirmSignUp = (e) => {
+    e.preventDefault();
+
+    Auth.confirmSignUp(email, code)
+      .then((data) => {
+        console.log(data);
+        setWaitingForCode(false);
+        setEmail("");
+        setCode("");
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const resendCode = () => {
+    Auth.resendSignUp(email)
+      .then(() => {
+        console.log("code resent successfully");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  return (
+    <div className="form">
+      <h3>Sign Up</h3>
+      {!waitingForCode && (
+        <form>
+          <FormElement label="Email" forId="sign-up-email">
+            <input
+              id="sign-up-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="email"
+            />
+          </FormElement>
+          <FormElement label="Password" forId="sign-up-email">
+            <input
+              id="sign-up-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+            />
+          </FormElement>
+          <button type="submit" onClick={signUp}>
+            Sign Up
+          </button>
+        </form>
+      )}
+      {waitingForCode && (
+        <form>
+          <FormElement label="Confirmation Code" forId="sign-up-code">
+            <input
+              id="sign-up-code"
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="code"
+            />
+          </FormElement>
+          <button type="submit" onClick={confirmSignUp}>
+            Confirm Sign Up
+          </button>
+          <button type="button" onClick={resendCode}>
+            Resend code
+          </button>
+        </form>
+      )}
+    </div>
+  );
+};
+
+export default SignUp;
+```
+
+When you have a registered user, you can use the email and password of that user in the `SignIn` form. Just fill in de email and the password and click on login and you will see a log in the console with the user information.
+
+```js
+import React, { useState } from "react";
+import { Auth } from "aws-amplify";
+import FormElement from "./FormElement";
+
+const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const signIn = (e) => {
+    e.preventDefault();
+
+    Auth.signIn({
+      username: email,
+      password,
+    })
+      .then((user) => {
+        setEmail("");
+        setPassword("");
+        console.log(user);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <div className="form">
+      <h3>Sign In</h3>
+      <form>
+        <FormElement label="Email" forId="sign-in-email">
+          <input
+            id="sign-in-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="email"
+          />
+        </FormElement>
+        <FormElement label="Password" forId="sign-in-password">
+          <input
+            id="sign-in-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="password"
+          />
+        </FormElement>
+        <button type="submit" onClick={signIn}>
+          Sign In
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default SignIn;
+```
+
+Turns out creating using AWS Cognito to add authentication to Create-React-App isn't that hard. I hope you can also pull it off.
+
+This proof of concept can use a lot of follow up content: deploying to multiple environments, use it in a real app with private and public parts and adding third party authentication providers like Facebook are the first that spring to mind. Maybe I'll find the motivation to try and write those up too.
