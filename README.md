@@ -4,10 +4,14 @@ The Agnita project is a proof of concept implementation using [Amazon Cognito](h
 
 The name Agnita comes from Latin and means recognized. The name was chosen in close relation to Cognito. Finding a suitable name took me quite some time and is utterly useless.
 
+## Medium
+
+https://medium.com/@bartwijnants/agnita-authentication-for-create-react-app-using-aws-cognito-80cde1fb781b
+
 ## Setting up AWS Cognito
 
 Make sure you have an AWS account, I suggest you use the [free tier](https://aws.amazon.com/free/) to get started.
-Go to the [Cognito](https://console.aws.amazon.com/cognito/) service in the [AWS Management Console] and click on Manage User Pools.
+Go to the [Cognito](https://console.aws.amazon.com/cognito/) service in the [AWS Management Console](https://console.aws.amazon.com/console) and click on Manage User Pools.
 
 ![Manage User Pools](images/01-Cognito.png)
 
@@ -23,7 +27,7 @@ As far as I know, those defaults look good. Since you are reading this, you prob
 
 ![Create Pool](images/04-Create-Pool.png)
 
-Back to the [Cognito](https://console.aws.amazon.com/cognito/) service in the [AWS Management Console] but this time you click on Manage Identity Pools.
+Back to the [Cognito](https://console.aws.amazon.com/cognito/) service in the [AWS Management Console](https://console.aws.amazon.com/console) but this time you click on Manage Identity Pools.
 
 ![Manage Identity Pools](images/01-Cognito.png)
 
@@ -37,17 +41,17 @@ If you once again go to Cognito, I'm not going to put that screenshot up again, 
 
 ![General Settings](images/06-General-Settings.png)
 
-Looks like I was right. You can click Add an client.
+Looks like I was right. You can click Add an app client.
 
 ![Add App Client](images/07-Add-App-Client.png)
 
-Guess what name I chose for my app client? That's right Agnita but I added -Web just because. You should also disa ble the Generate client secret checkbox. I left all other settings alone, so you can do that too, and I clicked Create app client.
+Guess what name I chose for my app client? That's right Agnita but I added -Web just because. You should also disable the Generate client secret checkbox. I left all other settings alone, so you can do that too, and I clicked Create app client.
 
 ![Create App Client](images/08-Create-App-Client.png)
 
 Now you can continue with the identity pool. Paste your id's and hit Create Pool!
 
-An unexpected screen appeared. Apparantly you also need to specify at least one role. I guess that makes sense. I'm only interested in one kind of authenticated user so I'm going to keep it simple.
+An unexpected screen appeared. Apparently you also need to specify at least one role. I guess that makes sense. I'm only interested in one kind of authenticated user so I'm going to keep it simple.
 
 ![Create Pool](images/09-Identify-Roles.png)
 
@@ -65,11 +69,11 @@ cd agnita
 code .
 ```
 
-If everything went well you should be in Visual Studio Code with your just generated create-react-app in ready.
+If everything went well you should be in Visual Studio Code with your just generated create-react-app ready for action.
 
 ### Prettier detour
 
-Before I can start working on a JavaScript project I always make sure [Prettier](https://prettier.io/) is installed. It's just so much faster to code if you can auto-format every 3.8 secondes.
+Before I can start working on a JavaScript project I always make sure [Prettier](https://prettier.io/) is installed. It's just so much faster to code if you can auto-format every 3.8 seconds.
 
 When I'm in Visual Studio Code I always use the built in terminal. You can show the integrated terminal by using the ⌃` (control + backtick) shortcut when you're on [macOS](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf) like me. The same Visual Studio keyboard shortcut also exists for [Windows](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf) and [Linux](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-linux.pdf).
 
@@ -157,7 +161,7 @@ export default App;
 
 You can see I created a `SignUp` and a `SignIn` component. These are 2 quite similar forms that use the AWS Amplify Auth API to create new users and sign in with those users. Now this app doesn't do anything so you should keep your browser console open to see if stuff works.
 
-The `SignUp` component consists of 2 forms. In the first form you need to fill in an email address and a password. When you submit, a user will be created with your email as the username and as email also your email and your password. If everything goes as smooth, the second form will become visibile. The second form requires you to enter a confirmation code. This code should be emailed to you after the first step. After you submit your confirmation code you will have a registered user.
+The `SignUp` component consists of 2 forms. In the first form you need to fill in an email address and a password. When you submit, a user will be created with your email as the username and as email also your email and your password. If everything goes smooth, the second form will become visible. The second form requires you to enter a confirmation code. This code should be emailed to you after the first step. After you submit your confirmation code you will have a registered user.
 
 ```js
 import React, { useState } from "react";
