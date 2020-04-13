@@ -8,17 +8,25 @@
 }
 
 .App-header {
-  background-color: #2d3748;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: #f7fafc;
   padding: 0 2em;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.form {
+  text-align: left;
+  padding: 0 2em;
+  margin: 4em 0;
+}
+
+.form-element {
+  margin: 1em 0;
 }
