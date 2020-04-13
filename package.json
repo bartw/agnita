@@ -1,6 +1,7 @@
 {
   "name": "agnita",
   "version": "0.1.0",
+  "description": "Authentication for Create React App using AWS Cognito",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -35,5 +36,15 @@
   },
   "devDependencies": {
     "prettier": "^2.0.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartw/agnita.git"
+  },
+  "author": "Bart Wijnants",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bartw/agnita/issues"
+  },
+  "homepage": "https://github.com/bartw/agnita#readme"
 }

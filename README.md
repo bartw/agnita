@@ -325,3 +325,7 @@ export default SignIn;
 Turns out creating using AWS Cognito to add authentication to Create-React-App isn't that hard. I hope you can also pull it off.
 
 This proof of concept can use a lot of follow up content: deploying to multiple environments, use it in a real app with private and public parts and adding third party authentication providers like Facebook are the first that spring to mind. Maybe I'll find the motivation to try and write those up too.
+
+## License
+
+This repo is licensed under the [MIT License](LICENSE).
